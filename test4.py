@@ -19,9 +19,6 @@ def get_content(target):
     content = texts.text.strip().split('\xa0'*4)
     return content
 
-def init(l):
-    global lock #定义lock为全局变量，供所有进程用
-    lock = l
 if __name__ == '__main__':
     server = 'https://www.xsbiquge.com'
     book_name = '诡秘之主.txt'
@@ -35,13 +32,6 @@ if __name__ == '__main__':
     for chapter in tqdm(chapters):
         chapter_name = chapter.string
         url = server + chapter.get('href')
-
-        lock = Lock()
-        pool = Pool(processes=20, initializer=init, initargs=(lock,))  # 设定进程数为20
-        pool.map(partial(get_content, target=url))  # 利用偏函数传递多个参数给get_content函数
-        pool.close()
-        pool.join()
-
         content = get_content(url)
         with open(book_name, 'a', encoding='utf-8') as f:
             f.write(chapter_name)
